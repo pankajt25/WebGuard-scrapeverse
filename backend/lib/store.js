@@ -81,10 +81,25 @@ export async function setCollectorHealth(health) {
   return state;
 }
 
+/**
+ * Log a heal attempt — but if the most recent event has the exact same
+ * prompt and status (e.g. the same field keeps breaking on every run),
+ * merge into it with a repeat count instead of stacking up identical
+ * entries. Keeps the timeline readable instead of spamming duplicates.
+ */
 export async function addHealEvent(event) {
   const state = await load();
-  state.healEvents.unshift(event);
-  state.healEvents = state.healEvents.slice(0, 25);
+  const last = state.healEvents[0];
+
+  if (last && last.prompt === event.prompt && last.status === event.status) {
+    last.repeatCount = (last.repeatCount || 1) + 1;
+    last.finishedAt = event.finishedAt;
+    last.verifyUrl = event.verifyUrl;
+  } else {
+    state.healEvents.unshift(event);
+    state.healEvents = state.healEvents.slice(0, 25);
+  }
+
   await persist();
   return state;
 }

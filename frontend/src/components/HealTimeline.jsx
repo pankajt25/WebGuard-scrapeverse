@@ -27,6 +27,7 @@ export default function HealTimeline({ events }) {
         <div key={i} className={`timeline-item ${statusClass(e.status)}`}>
           <span className="timeline-time">
             {timeAgo(e.startedAt)} · status: {e.status}
+            {e.repeatCount > 1 && <span className="timeline-repeat"> · recurred ×{e.repeatCount}</span>}
           </span>
           <div className="timeline-prompt">{e.prompt}</div>
           {e.diffSummary && <div className="timeline-diff">→ {e.diffSummary}</div>}

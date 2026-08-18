@@ -41,12 +41,14 @@ export default function ProductCard({ product, selected, onSelect, onSimulateBre
 
       <Sparkline points={product.sparkline} trend={product.trend} />
 
-      <div className="card-bottom">
-        <span className="card-price mono">{formatPrice(product.price, product.currency)}</span>
-        <span className={`card-trend ${trendClass}`}>{trendLabel}</span>
-      </div>
-      <div className={`card-stock ${product.inStock ? '' : 'out'}`}>
-        {product.inStock ? 'in stock' : 'out of stock'}
+      <div className="card-fill">
+        <div className="card-bottom">
+          <span className="card-price mono">{formatPrice(product.price, product.currency)}</span>
+          <span className={`card-trend ${trendClass}`}>{trendLabel}</span>
+        </div>
+        <div className={`card-stock ${product.inStock ? '' : 'out'}`}>
+          {product.inStock ? 'in stock' : 'out of stock'}
+        </div>
       </div>
 
       {demoMode && (

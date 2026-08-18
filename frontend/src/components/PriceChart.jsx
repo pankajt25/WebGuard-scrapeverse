@@ -14,8 +14,8 @@ export default function PriceChart({ history, currency }) {
         <AreaChart data={data} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
           <defs>
             <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3ecf8e" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#3ecf8e" stopOpacity={0} />
+              <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke="#24304455" vertical={false} />
@@ -25,6 +25,7 @@ export default function PriceChart({ history, currency }) {
             axisLine={{ stroke: '#24304488' }}
             tickLine={false}
             interval="preserveStartEnd"
+            minTickGap={44}
           />
           <YAxis
             tick={{ fill: '#8b97ac', fontSize: 10, fontFamily: 'JetBrains Mono' }}
@@ -36,16 +37,16 @@ export default function PriceChart({ history, currency }) {
           />
           <Tooltip
             contentStyle={{
-              background: '#1a2434',
+              background: '#182437',
               border: '1px solid #24304488',
-              borderRadius: 8,
+              borderRadius: 10,
               fontFamily: 'JetBrains Mono',
               fontSize: 12
             }}
             labelStyle={{ color: '#8b97ac' }}
             formatter={(value) => [formatPrice(value, currency), 'price']}
           />
-          <Area type="monotone" dataKey="price" stroke="#3ecf8e" strokeWidth={2} fill="url(#priceFill)" />
+          <Area type="monotone" dataKey="price" stroke="#3B82F6" strokeWidth={2.25} fill="url(#priceFill)" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
