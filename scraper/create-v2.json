@@ -1,0 +1,1 @@
+{"collector_id":"c_msya35utgpmdyg49w","name":"priceguard-collector-v2","status":"done","completed_steps":["prepare_intent_analyzer","planner","collector_mainatiner","output_schema_generator","code_generator","input_schema_generator","preview_runner","preview_picker"],"view_url":"https://brightdata.com/cp/scrapers/c_msya35utgpmdyg49w","created_at":"2026-08-18T06:25:09.221Z"}

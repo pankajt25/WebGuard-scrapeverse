@@ -1,0 +1,526 @@
+{
+  "lastRunAt": "2026-08-15T08:53:17.525Z",
+  "collectorHealth": {
+    "healthy": true,
+    "brokenFields": [],
+    "lastCheckedAt": "2026-08-15T08:53:17.525Z"
+  },
+  "healEvents": [
+    {
+      "startedAt": "2026-08-12T10:13:17.525Z",
+      "finishedAt": "2026-08-12T10:15:17.525Z",
+      "prompt": "The \"price\" field is returning null or empty. The selector for this field likely moved after a layout change — re-identify it from the current page and capture the value again, keeping the same field name and type.",
+      "verifyUrl": "https://www.headphonezone.in/products/hifiman-sundara",
+      "status": "done",
+      "viewUrl": "https://brightdata.com/cp/scrapers/c_demo_priceguard",
+      "diffSummary": "proposed template has 1 step(s) — selector for price moved into [data-testid=\"sale-price\"]",
+      "error": null
+    }
+  ],
+  "products": [
+    {
+      "id": "p1",
+      "name": "Snowsky - Wind Pro",
+      "url": "https://www.headphonezone.in/products/snowsky-wind-pro",
+      "category": "Retro On-Ear Headphones",
+      "imageUrl": "https://picsum.photos/seed/snowskywindpro/400/300",
+      "currency": "INR",
+      "price": 1871,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 1711,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 1897,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 1923,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 1908,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 1880,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 1891,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 1890,
+          "inStock": false
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 1919,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 1916,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 1910,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 1896,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 1892,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 1881,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 1871,
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Moondrop - Old Fashioned",
+      "url": "https://www.headphonezone.in/products/moondrop-old-fashioned",
+      "category": "Open-Back Headphone",
+      "imageUrl": "https://picsum.photos/seed/moondropof/400/300",
+      "currency": "INR",
+      "price": 2696,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 2560,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 2577,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 2534,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 2568,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 2584,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 2614,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 2639,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 2675,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 2687,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 2676,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 2684,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 2697,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 2743,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 2696,
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "FiiO - FG3",
+      "url": "https://www.headphonezone.in/products/fiio-fg3",
+      "category": "Closed-Back Gaming Headphone",
+      "imageUrl": "https://picsum.photos/seed/fiiofg3/400/300",
+      "currency": "INR",
+      "price": 7127,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 6782,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 6199,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 6126,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 6801,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 6748,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 6866,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 6757,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 6838,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 6912,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 6188,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 6969,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 7054,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 7086,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 7127,
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "name": "HiFiMAN - Sundara",
+      "url": "https://www.headphonezone.in/products/hifiman-sundara",
+      "category": "Planar Magnetic Open-Backs",
+      "imageUrl": "https://picsum.photos/seed/hifimansundara/400/300",
+      "currency": "INR",
+      "price": 16197,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 19062,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 18855,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 18731,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 16604,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 16824,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 18471,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 18359,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 18551,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 18867,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 18745,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 18545,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 18250,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 18110,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 16197,
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "name": "FiiO - FT1 PRO",
+      "url": "https://www.headphonezone.in/products/fiio-ft1-pro",
+      "category": "Open-Back Planar Headphone",
+      "imageUrl": "https://picsum.photos/seed/fiioft1pro/400/300",
+      "currency": "INR",
+      "price": 20950,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 20724,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 20680,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 20648,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 20766,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 20752,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 18561,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 20701,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 20882,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 20641,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 20482,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 20481,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 18269,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 20605,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 20950,
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "id": "p6",
+      "name": "Sennheiser - HD 650",
+      "url": "https://www.headphonezone.in/products/sennheiser-hd-650",
+      "category": "Open-Back Headphone",
+      "imageUrl": "https://picsum.photos/seed/sennheiserhd650/400/300",
+      "currency": "INR",
+      "price": 25722,
+      "inStock": true,
+      "lastCheckedAt": "2026-08-15T08:53:17.525Z",
+      "simulatedBreak": false,
+      "history": [
+        {
+          "t": "2026-08-02T10:53:17.525Z",
+          "price": 25494,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-03T10:53:17.525Z",
+          "price": 25662,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-04T10:53:17.525Z",
+          "price": 25752,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-05T10:53:17.525Z",
+          "price": 25534,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-06T10:53:17.525Z",
+          "price": 25160,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-07T10:53:17.525Z",
+          "price": 25148,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-08T10:53:17.525Z",
+          "price": 25489,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-09T10:53:17.525Z",
+          "price": 23103,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-10T10:53:17.525Z",
+          "price": 25536,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-11T10:53:17.525Z",
+          "price": 25308,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-12T10:53:17.525Z",
+          "price": 25577,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-13T10:53:17.525Z",
+          "price": 22975,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-14T10:53:17.525Z",
+          "price": 25601,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-15T10:53:17.525Z",
+          "price": 25722,
+          "inStock": true
+        }
+      ]
+    }
+  ]
+}

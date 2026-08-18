@@ -1,0 +1,29 @@
+{
+  "_comment": "Real, publicly accessible product pages from Headphone Zone (headphonezone.in), a real Indian audiophile retailer — verified in stock as of this writing. Prices are in INR. Re-check each page is still live and in stock before building the collector; product catalogs change. Keep the list under ~20 URLs while testing to conserve free-tier credits.",
+  "input_schema": {
+    "url": "string — the product page to scrape"
+  },
+  "output_fields": {
+    "name": "string — product title",
+    "price": "number — current price, numeric only (no currency symbol)",
+    "currency": "string — ISO currency code, e.g. USD",
+    "in_stock": "boolean — true if the page shows the item as purchasable",
+    "image_url": "string — primary product image URL",
+    "url": "string — the input URL, echoed back for joining"
+  },
+  "field_descriptions_for_scraper_create": {
+    "name": "The product's title as shown on the page, usually the main heading near the top of the product page.",
+    "price": "The current selling price shown to the buyer, as a plain number with no currency symbol or thousands separator. If there's a sale price and a struck-through original price, use the sale price.",
+    "currency": "The three-letter ISO currency code implied by the page's currency symbol or locale (e.g. $ -> USD, € -> EUR).",
+    "in_stock": "true if the page offers an 'Add to cart' / 'Buy now' action and does not show an out-of-stock or sold-out message, false otherwise.",
+    "image_url": "The src URL of the main product photo, not a thumbnail or a related-item image."
+  },
+  "urls": [
+    { "url": "https://www.headphonezone.in/products/snowsky-wind-pro" },
+    { "url": "https://www.headphonezone.in/products/moondrop-old-fashioned" },
+    { "url": "https://www.headphonezone.in/products/fiio-fg3" },
+    { "url": "https://www.headphonezone.in/products/hifiman-sundara" },
+    { "url": "https://www.headphonezone.in/products/fiio-ft1-pro" },
+    { "url": "https://www.headphonezone.in/products/sennheiser-hd-650" }
+  ]
+}

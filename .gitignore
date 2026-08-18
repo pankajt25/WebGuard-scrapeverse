@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+backend/data/state.json
+scraper/.collector_id
+scraper/create.json
+scraper/heal.json
+scraper/approve.json
+scraper/latest-run.json
+*.log
+.DS_Store

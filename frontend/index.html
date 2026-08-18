@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PriceGuard — self-healing price tracking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Deterrent only, not real protection — disables the easy right-click
+      // "View page source" / Ctrl+U shortcuts for screen-share demos. Anyone
+      // can still reach DevTools (F12) or type view-source: directly, and
+      // the full code is public on GitHub anyway per the hackathon rules.
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (e.ctrlKey && key === 'u') e.preventDefault(); // view source
+        if (e.ctrlKey && e.shiftKey && key === 'i') e.preventDefault(); // devtools
+        if (e.key === 'F12') e.preventDefault();
+      });
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
