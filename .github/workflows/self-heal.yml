@@ -1,0 +1,58 @@
+name: Scheduled scrape & self-heal
+
+# Runs WebGuard's live scraper unattended, on a schedule — real evidence of
+# "runs automatically and heals itself" beyond a manual click in the
+# dashboard. Every run's outcome is visible in the Actions log, and if the
+# scraped data actually changed, the run commits the updated
+# backend/data/state.json back to the repo — so the commit history itself
+# is a verifiable log of real, timestamped, unattended runs.
+
+on:
+  schedule:
+    # Every 6 hours. Cron is UTC. Adjust as needed — GitHub may delay
+    # scheduled runs slightly under load, that's normal for free-tier Actions.
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    # Lets you trigger a run manually from the Actions tab, e.g. to verify
+    # the workflow works right after setting it up, without waiting 6 hours.
+
+permissions:
+  contents: write # needed to commit the updated state.json back to the repo
+
+jobs:
+  run-and-heal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run scraper + self-heal
+        working-directory: backend
+        env:
+          DEMO_MODE: 'false'
+          BRIGHT_DATA_API_TOKEN: ${{ secrets.BRIGHT_DATA_API_TOKEN }}
+          AUTO_APPROVE_HEALS: 'true' # unattended — no human to click "approve"
+        run: node scripts/run-and-heal.mjs
+
+      - name: Commit updated data, if any
+        run: |
+          git config user.name "webguard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f backend/data/state.json
+          if git diff --cached --quiet; then
+            echo "No data changes this run — nothing to commit."
+          else
+            git commit -m "🤖 automated scrape run — $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

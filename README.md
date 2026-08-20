@@ -198,8 +198,24 @@ Per the hackathon rules (AI coding assistants are allowed if disclosed):
 |---|---|
 | **Scraping** | Bright Data Scraper Studio (collector) + Bright Data CLI for build/heal |
 | **Backend** | Node.js, Express, native `fetch`, a flat-file JSON store (swap for Postgres/Mongo — see `backend/lib/store.js`) |
-| **Frontend** | React 18, Vite, Recharts |
-| **Runs** | Entirely locally — no external services required to demo |
+| **Frontend** | React 18, Vite, Recharts — plus a zero-build single-file alternative served directly by the backend |
+| **Automation** | GitHub Actions runs the real scraper + self-heal on a schedule (`.github/workflows/self-heal.yml`) — see below |
+| **Runs** | Entirely locally to demo — no external services required |
+
+<br>
+
+## ⏰ Scheduled automation (GitHub Actions)
+
+`.github/workflows/self-heal.yml` runs the exact same scrape-and-heal logic as the dashboard's "Run Scraper Now" button (`backend/lib/runner.js`, shared by both), unattended, every 6 hours — plus a manual trigger from the Actions tab for on-demand runs.
+
+If the scraped data changed, the workflow commits the updated `backend/data/state.json` back to the repo. That means the commit history itself is real, timestamped evidence that unattended runs actually happened — not just a claim.
+
+**To enable it in your own fork/clone:**
+1. Go to your repo → Settings → Secrets and variables → Actions → New repository secret
+2. Name: `BRIGHT_DATA_API_TOKEN`, value: your Bright Data API key
+3. Go to the Actions tab → "Scheduled scrape & self-heal" → Run workflow, to trigger it manually and verify it works before waiting for the schedule
+
+A failed store (bad credentials, Bright Data outage, etc.) makes the workflow run show a red ✗ in the Actions tab, not a misleading green checkmark — see `backend/scripts/run-and-heal.mjs`.
 
 <div align="center">
 <br>
