@@ -1,6 +1,6 @@
 // Decides whether a collector run came back healthy, and if not, drives the
 // self-heal loop. This is the "reliability and self-healing" piece the
-// judging criteria ask about: PriceGuard doesn't wait for a human to notice
+// judging criteria ask about: WebGuard doesn't wait for a human to notice
 // bad data, it treats null required fields and row-count collapse as a
 // first-class signal.
 
@@ -54,16 +54,20 @@ export function buildHealPrompt(assessment) {
 }
 
 /**
- * Run the full detect → heal → (optionally approve) loop for one assessment.
+ * Run the full detect → heal → (optionally approve) loop for one assessment,
+ * against a specific store's collector.
  * Returns a heal-event record suitable for logging/storing, regardless of
  * outcome.
+ * @param {object} assessment
+ * @param {string} collectorId - which store's collector to heal
+ * @param {boolean} autoApprove
  */
-export async function autoHeal(assessment, autoApprove) {
+export async function autoHeal(assessment, collectorId, autoApprove) {
   const { prompt, verifyUrl } = buildHealPrompt(assessment);
   const startedAt = new Date().toISOString();
 
   try {
-    const result = await healCollector(prompt, verifyUrl, autoApprove);
+    const result = await healCollector(collectorId, prompt, verifyUrl, autoApprove);
     return {
       startedAt,
       finishedAt: new Date().toISOString(),

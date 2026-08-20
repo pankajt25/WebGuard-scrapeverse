@@ -1,7 +1,7 @@
 {
-  "name": "priceguard-frontend",
+  "name": "webguard-frontend",
   "version": "1.0.0",
-  "description": "Dashboard for PriceGuard — self-healing price & inventory tracker.",
+  "description": "Dashboard for WebGuard — self-healing price & inventory tracker.",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -23,7 +23,7 @@ Replace the placeholder URLs in `products.json` with real, publicly accessible p
 brightdata scraper create "<first-product-url>" \
   "Extract the product name, current price as a plain number, currency code, \
    whether it's in stock (true/false), and the main product image URL." \
-  --name priceguard-collector \
+  --name webguard-collector \
   -o scraper/create.json
 
 # grab the collector id for everything that follows
@@ -81,4 +81,34 @@ brightdata scraper approve "$COLLECTOR_ID" \
 brightdata scraper run "$COLLECTOR_ID" "<same-product-url>" --pretty
 ```
 
-See `docs/SELF_HEALING.md` for how PriceGuard's backend automates exactly this loop (`heal` → `approve`) without a human running commands, once it detects a broken field on its own.
+See `docs/SELF_HEALING.md` for how WebGuard's backend automates exactly this loop (`heal` → `approve`) without a human running commands, once it detects a broken field on its own.
+
+## Adding a new store
+
+Each store needs its own collector — a collector's extraction logic is generated around one site's specific markup and will not work on a different site (you'll see failed crawls / null fields if you try to reuse one collector across unrelated domains).
+
+To add a new store:
+
+1. **Pick a real, public product page** from the new site and confirm it's not behind a login/paywall.
+2. **Create a collector for it:**
+   ```bash
+   brightdata scraper create "<a product URL from the new site>" \
+     "Extract the product name, current price as a plain number, currency code, whether it's in stock (true/false), and the main product image URL." \
+     --name webguard-<store-name>-collector \
+     -o scraper/create-<store-name>.json
+   ```
+3. **Grab the collector_id** from the output, same as before.
+4. **Add a new entry to the `stores` array in `scraper/products.json`:**
+   ```json
+   {
+     "name": "Your Store Name",
+     "collector_id": "c_xxxxxxxx",
+     "urls": [
+       { "url": "https://store.com/product-1" },
+       { "url": "https://store.com/product-2" }
+     ]
+   }
+   ```
+5. **Restart the backend** and hit "Run Scraper Now" — the new store's products will run through its own collector and automatically appear on the dashboard the first time a successful row comes back (WebGuard creates a new tracked product automatically for any URL it hasn't seen before, tagged with the store name).
+
+A store entry with an empty `"collector_id": ""` is skipped automatically on live runs — safe to leave as a placeholder while you're still building that collector.

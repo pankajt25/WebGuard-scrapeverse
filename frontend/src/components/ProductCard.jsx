@@ -30,13 +30,16 @@ export default function ProductCard({ product, selected, onSelect, onSimulateBre
       className={`card ${selected ? 'selected' : ''} ${product.simulatedBreak ? 'broken' : ''}`}
       onClick={() => onSelect(product.id)}
     >
-      {product.simulatedBreak && <span className="card-broken-flag">extraction broken</span>}
       <div className="card-top">
         <img className="card-thumb" src={product.imageUrl} alt="" />
-        <div>
+        <div className="card-top-text">
           <p className="card-title">{product.name}</p>
-          <span className="card-category">{product.category}</span>
+          <span className="card-category">
+            {product.category}
+            {product.store && <span className="card-store-tag"> · {product.store}</span>}
+          </span>
         </div>
+        {product.simulatedBreak && <span className="card-broken-flag">broken</span>}
       </div>
 
       <Sparkline points={product.sparkline} trend={product.trend} />

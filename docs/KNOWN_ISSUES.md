@@ -1,4 +1,4 @@
-# Known issues
+# 🐛 Known issues
 
 ## Duplicated price digits from the live collector
 

@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WebGuard — self-healing price tracking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink: #05070f; --panel: #0d1424; --panel-raised: #121b30;
+  --line: rgba(148,163,184,.14); --line-strong: rgba(148,163,184,.26);
+  --text: #eef2f8; --muted: #8b97ac;
+  --brand-red: #e23636; --brand-red-dim: #b8231f;
+  --brand-blue: #3b82f6;
+  --mint: #34d399; --amber: #fbbf24; --red: #f87171;
+  --radius: 14px; --radius-sm: 9px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,.35), 0 14px 30px -16px rgba(0,0,0,.7);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--ink);
+  background-image:
+    radial-gradient(circle at 12% -8%, rgba(226,54,54,.1) 0%, transparent 38%),
+    radial-gradient(circle at 92% 6%, rgba(59,130,246,.1) 0%, transparent 38%),
+    repeating-linear-gradient(55deg, rgba(148,163,184,.035) 0px, rgba(148,163,184,.035) 1px, transparent 1px, transparent 64px),
+    repeating-linear-gradient(-55deg, rgba(148,163,184,.035) 0px, rgba(148,163,184,.035) 1px, transparent 1px, transparent 64px);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.app { max-width: 1200px; margin: 0 auto; padding: 32px 24px 90px; }
+.header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 13px; }
+.brand-mark { width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, var(--brand-red), var(--brand-blue)); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 15px; box-shadow: 0 6px 18px -4px rgba(226,54,54,.5); }
+.brand h1 { font-size: 21px; margin: 0; font-weight: 800; text-transform: uppercase; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.mode-pill { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 6px 11px; border-radius: 100px; border: 1px solid var(--line-strong); background: var(--panel); color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+button.primary { background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dim)); color: #fff; border: none; font-weight: 700; font-size: 13.5px; padding: 11px 20px; border-radius: var(--radius-sm); cursor: pointer; box-shadow: 0 8px 20px -8px rgba(226,54,54,.6); }
+button.primary:disabled { opacity: .5; cursor: default; }
+button.ghost { background: rgba(148,163,184,.06); border: 1px solid var(--line-strong); color: var(--text); font-size: 11px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; }
+button.ghost:hover:not(:disabled) { border-color: var(--brand-blue); color: var(--brand-blue); }
+button.ghost:disabled { opacity: .5; cursor: default; }
+.pulse-strip { background: linear-gradient(145deg, var(--panel), var(--panel-raised)); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; display: flex; align-items: center; gap: 18px; margin-bottom: 26px; box-shadow: var(--shadow-card); position: relative; overflow: hidden; flex-wrap: wrap; row-gap: 14px; }
+.pulse-strip::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px; background: linear-gradient(90deg, var(--brand-red), var(--brand-blue)); }
+.pulse-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px rgba(52,211,153,.6); flex-shrink: 0; }
+.pulse-dot.broken { background: var(--red); box-shadow: 0 0 10px rgba(248,113,113,.6); }
+.pulse-dot.repairing { background: var(--amber); box-shadow: 0 0 10px rgba(251,191,36,.6); }
+.pulse-text strong { display: block; font-size: 14px; font-weight: 600; }
+.pulse-text span { font-size: 11.5px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.pulse-meta { display: flex; gap: 26px; margin-left: auto; flex-wrap: wrap; }
+.pulse-meta div { text-align: right; }
+.pulse-meta .label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+.pulse-meta .value { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; margin-top: 2px; }
+.layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 880px) { .layout { grid-template-columns: 1fr; } }
+.section-title { font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; font-weight: 600; color: var(--muted); margin: 0 0 14px 2px; }
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+@media (max-width: 640px) { .product-grid { grid-template-columns: 1fr; } }
+.card { display: flex; flex-direction: column; background: linear-gradient(160deg, var(--panel), var(--panel-raised) 130%); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; cursor: pointer; position: relative; overflow: hidden; box-shadow: var(--shadow-card); transition: transform .15s ease, border-color .15s ease; }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px; background: linear-gradient(90deg, var(--brand-red), var(--brand-blue)); opacity: .75; }
+.card:hover { transform: translateY(-3px); border-color: var(--line-strong); }
+.card.selected { border-color: var(--brand-blue); }
+.card.broken { border-color: var(--red); }
+.card-top { display: flex; gap: 11px; align-items: flex-start; min-height: 48px; }
+.card-thumb { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: var(--panel-raised); border: 1px solid var(--line); flex-shrink: 0; }
+.card-top-text { flex: 1; min-width: 0; }
+.card-title { font-size: 13.5px; font-weight: 600; margin: 0 0 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-category { font-size: 11px; color: var(--muted); }
+.card-store-tag { color: var(--brand-blue); }
+.card-broken-flag { font-size: 9.5px; font-family: 'JetBrains Mono', monospace; color: var(--red); background: rgba(248,113,113,.14); border: 1px solid rgba(248,113,113,.35); padding: 3px 8px; border-radius: 100px; text-transform: uppercase; height: fit-content; flex-shrink: 0; }
+.sparkline { margin-top: 10px; width: 100%; height: 30px; display: block; }
+.card-fill { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+.card-bottom { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 14px; }
+.card-price { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; }
+.card-trend { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; padding: 3px 7px; border-radius: 6px; }
+.card-trend.up { color: var(--red); background: rgba(248,113,113,.12); }
+.card-trend.down { color: var(--mint); background: rgba(52,211,153,.12); }
+.card-trend.flat { color: var(--muted); background: rgba(148,163,184,.08); }
+.card-stock { font-size: 10.5px; margin-top: 7px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.card-stock::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--mint); }
+.card-stock.out { color: var(--amber); }
+.card-stock.out::before { background: var(--amber); }
+.card-actions { margin-top: 12px; display: flex; justify-content: flex-end; }
+.detail-panel { background: linear-gradient(160deg, var(--panel), var(--panel-raised) 140%); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; min-height: 220px; box-shadow: var(--shadow-card); }
+.detail-empty { color: var(--muted); font-size: 13px; padding: 44px 10px; text-align: center; }
+.detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; }
+.detail-header h2 { font-size: 17px; margin: 0 0 5px; }
+.detail-header .url { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+.detail-price { font-family: 'JetBrains Mono', monospace; font-size: 25px; font-weight: 700; color: var(--brand-blue); flex-shrink: 0; }
+.chart-wrap { margin-top: 16px; height: 190px; }
+.timeline { margin-top: 20px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
+.timeline-item { border-left: 2px solid var(--line); padding: 2px 0 18px 18px; position: relative; }
+.timeline-item::before { content: ''; position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--mint); border: 2px solid var(--panel); }
+.timeline-item.pending::before { background: var(--amber); }
+.timeline-item.failed::before { background: var(--red); }
+.timeline-time { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); }
+.timeline-repeat { color: var(--amber); }
+.timeline-prompt { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,.25); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 11px 13px; margin: 7px 0; line-height: 1.55; }
+.timeline-diff { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--brand-blue); }
+.timeline-empty { color: var(--muted); font-size: 12.5px; }
+.footer-note { margin-top: 40px; text-align: center; color: var(--muted); font-size: 11.5px; }
+.footer-note a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">WG</div>
+      <div>
+        <h1>WebGuard</h1>
+        <p>Self-healing price &amp; inventory tracker · Bright Data Scraper Studio · single-file build</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="mode-pill" id="mode-pill">… mode</span>
+      <button class="primary" id="run-btn">Run scraper now</button>
+    </div>
+  </header>
+
+  <div class="pulse-strip">
+    <span class="pulse-dot" id="pulse-dot"></span>
+    <div class="pulse-text">
+      <strong id="pulse-title">Loading…</strong>
+      <span id="pulse-sub"></span>
+    </div>
+    <div class="pulse-meta">
+      <div><div class="label">Tracking</div><div class="value" id="meta-count">—</div></div>
+      <div><div class="label">Last run</div><div class="value" id="meta-time">—</div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <p class="section-title">Tracked products</p>
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+    <div>
+      <p class="section-title">Detail</p>
+      <div class="detail-panel" id="detail-panel">
+        <p class="detail-empty">Select a product to see its price history.</p>
+      </div>
+      <p class="section-title" style="margin-top:22px">Self-heal timeline</p>
+      <div class="detail-panel" id="timeline-panel"></div>
+    </div>
+  </div>
+
+  <p class="footer-note">Built for <a href="https://www.wemakedevs.org/hackathons/scrape-verse" target="_blank">Into the Scrape-Verse</a> · powered by Bright Data Scraper Studio · single-file dashboard mode</p>
+</div>
+
+<script>
+const SYMBOLS = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+function formatPrice(price, currency) {
+  if (price === null || price === undefined) return '—';
+  const symbol = SYMBOLS[currency] || (currency ? currency + ' ' : '');
+  const amount = currency === 'INR' ? Math.round(price).toLocaleString('en-IN') : Number(price).toFixed(2);
+  return symbol + amount;
+}
+
+let selectedId = null;
+let running = false;
+
+async function api(path, opts) {
+  const res = await fetch('/api' + path, opts);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || ('Request failed with ' + res.status));
+  }
+  return res.json();
+}
+
+function sparklinePath(points) {
+  if (!points || points.length < 2) return '';
+  const min = Math.min(...points), max = Math.max(...points), range = max - min || 1;
+  const w = 100, h = 24, step = w / (points.length - 1);
+  return points.map((p, i) => (i === 0 ? 'M' : 'L') + (i * step).toFixed(2) + ' ' + (h - ((p - min) / range) * h).toFixed(2)).join(' ');
+}
+
+function typeTagClass(field) { return field; }
+
+function renderProducts(products) {
+  const grid = document.getElementById('product-grid');
+  grid.innerHTML = '';
+  products.forEach((p) => {
+    const trendClass = p.trend > 0.05 ? 'up' : p.trend < -0.05 ? 'down' : 'flat';
+    const trendLabel = (p.trend > 0 ? '+' : '') + p.trend + '%';
+    const path = sparklinePath(p.sparkline);
+    const sparkColor = p.trend > 0 ? 'var(--red)' : p.trend < 0 ? 'var(--mint)' : 'var(--muted)';
+    const card = document.createElement('div');
+    card.className = 'card' + (p.id === selectedId ? ' selected' : '') + (p.simulatedBreak ? ' broken' : '');
+    card.innerHTML = `
+      <div class="card-top">
+        <img class="card-thumb" src="${p.imageUrl || ''}" alt="" />
+        <div class="card-top-text">
+          <p class="card-title">${p.name}</p>
+          <span class="card-category">${p.category || ''}${p.store ? ' · <span class=\"card-store-tag\">' + p.store + '</span>' : ''}</span>
+        </div>
+        ${p.simulatedBreak ? '<span class="card-broken-flag">broken</span>' : ''}
+      </div>
+      <svg class="sparkline" viewBox="0 0 100 24" preserveAspectRatio="none">
+        <path d="${path}" fill="none" stroke="${sparkColor}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+      </svg>
+      <div class="card-fill">
+        <div class="card-bottom">
+          <span class="card-price mono">${formatPrice(p.price, p.currency)}</span>
+          <span class="card-trend ${trendClass}">${trendLabel}</span>
+        </div>
+        <div class="card-stock ${p.inStock ? '' : 'out'}">${p.inStock ? 'in stock' : 'out of stock'}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => { selectedId = p.id; loadDetail(p.id); renderProducts(products); });
+    grid.appendChild(card);
+  });
+}
+
+function renderChart(history, currency) {
+  const w = 560, h = 190, pad = 30;
+  if (!history || history.length < 2) return '<p class="detail-empty">Not enough history yet.</p>';
+  const prices = history.map((h) => h.price);
+  const min = Math.min(...prices), max = Math.max(...prices), range = (max - min) || 1;
+  const step = (w - pad * 2) / (history.length - 1);
+  const points = history.map((pt, i) => {
+    const x = pad + i * step;
+    const y = h - pad - ((pt.price - min) / range) * (h - pad * 2);
+    return [x, y];
+  });
+  const linePath = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const areaPath = linePath + ` L ${points[points.length - 1][0].toFixed(1)} ${h - pad} L ${points[0][0].toFixed(1)} ${h - pad} Z`;
+  return `
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%">
+      <defs>
+        <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="${areaPath}" fill="url(#fillGrad)" />
+      <path d="${linePath}" fill="none" stroke="#3b82f6" stroke-width="2.25" />
+      <text x="${pad}" y="${h - 8}" fill="#8b97ac" font-size="10" font-family="JetBrains Mono">${new Date(history[0].t).toLocaleDateString()}</text>
+      <text x="${w - pad}" y="${h - 8}" fill="#8b97ac" font-size="10" font-family="JetBrains Mono" text-anchor="end">${new Date(history[history.length - 1].t).toLocaleDateString()}</text>
+    </svg>
+  `;
+}
+
+async function loadDetail(id) {
+  const p = await api('/products/' + id);
+  const panel = document.getElementById('detail-panel');
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <h2>${p.name}</h2>
+        <div class="url">${p.url}</div>
+      </div>
+      <div class="detail-price mono">${formatPrice(p.price, p.currency)}</div>
+    </div>
+    <div class="chart-wrap">${renderChart(p.history, p.currency)}</div>
+  `;
+}
+
+function timeAgo(iso) {
+  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.round(hrs / 24) + 'd ago';
+}
+
+function statusClass(status) {
+  if (status === 'done') return '';
+  if (status === 'awaiting_approval') return 'pending';
+  return 'failed';
+}
+
+function renderTimeline(events) {
+  const panel = document.getElementById('timeline-panel');
+  if (!events || events.length === 0) {
+    panel.innerHTML = '<p class="timeline-empty">No self-heal events yet.</p>';
+    return;
+  }
+  panel.innerHTML = '<div class="timeline">' + events.map((e) => `
+    <div class="timeline-item ${statusClass(e.status)}">
+      <span class="timeline-time">${timeAgo(e.startedAt)} · status: ${e.status}${e.repeatCount > 1 ? ' <span class="timeline-repeat">· recurred ×' + e.repeatCount + '</span>' : ''}</span>
+      <div class="timeline-prompt">${e.prompt}</div>
+      ${e.diffSummary ? '<div class="timeline-diff">→ ' + e.diffSummary + '</div>' : ''}
+      ${e.error ? '<div class="timeline-diff" style="color:var(--red)">→ ' + e.error + '</div>' : ''}
+    </div>
+  `).join('') + '</div>';
+}
+
+async function refreshAll() {
+  const [status, products, events] = await Promise.all([
+    api('/status'), api('/products'), api('/heal-events')
+  ]);
+
+  document.getElementById('mode-pill').textContent = status.mode + ' mode';
+  const healthy = status.collectorHealth?.healthy ?? true;
+  const dot = document.getElementById('pulse-dot');
+  dot.className = 'pulse-dot' + (running ? ' repairing' : healthy ? '' : ' broken');
+  document.getElementById('pulse-title').textContent = running ? 'Self-healing in progress…' : healthy ? 'Collector healthy' : 'Extraction broken — repair needed';
+  document.getElementById('pulse-sub').textContent = status.collectorConfigured ? 'collector connected' : 'collector not configured — using seed data';
+  document.getElementById('meta-count').textContent = status.productCount + ' products';
+  document.getElementById('meta-time').textContent = status.lastRunAt ? new Date(status.lastRunAt).toLocaleTimeString() : '—';
+
+  renderProducts(products);
+  renderTimeline(events);
+
+  if (!selectedId && products.length > 0) { selectedId = products[0].id; }
+  if (selectedId) loadDetail(selectedId);
+}
+
+document.getElementById('run-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('run-btn');
+  running = true;
+  btn.disabled = true;
+  btn.textContent = 'Running…';
+  try {
+    await api('/run', { method: 'POST' });
+  } catch (err) {
+    alert('Run failed: ' + err.message);
+  } finally {
+    running = false;
+    btn.disabled = false;
+    btn.textContent = 'Run scraper now';
+    await refreshAll();
+  }
+});
+
+refreshAll();
+</script>
+</body>
+</html>

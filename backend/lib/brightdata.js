@@ -11,30 +11,39 @@
 // This mirrors the official brightdata/bright-data-scraper-studio-nodejs-project
 // boilerplate for the Collection API calls, plus the heal/approve calls documented
 // for the Bright Data CLI (`scraper heal` / `scraper approve`).
+//
+// Every function here takes a `collectorId` as an explicit argument rather
+// than reading a single global one — WebGuard tracks multiple stores, each
+// with its OWN collector (one collector's extraction logic is tied to one
+// site's markup, see scraper/SETUP.md), so there is no single "the"
+// collector anymore. The API token stays account-wide and still comes from
+// process.env.
 
-// NOTE: these read process.env fresh on every call rather than caching into
-// module-level constants at import time. That matters because server.js
+// NOTE: reads process.env fresh on every call rather than caching into a
+// module-level constant at import time. That matters because server.js
 // loads .env AFTER its imports run (imports always execute before the rest
 // of an ES module's top-level code) — caching here would permanently freeze
-// these as empty, no matter what .env says.
+// this as empty, no matter what .env says.
 function getApiBase() {
   return process.env.BRIGHT_DATA_API_BASE || 'https://api.brightdata.com';
 }
 function getToken() {
   return process.env.BRIGHT_DATA_API_TOKEN;
 }
-function getCollectorId() {
-  return process.env.BRIGHT_DATA_COLLECTOR_ID;
-}
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLL_ATTEMPTS = 60; // ~5 minutes
 const MAX_RETRIES = 3;
 
-function assertConfigured() {
-  if (!getToken() || !getCollectorId()) {
+function assertConfigured(collectorId, storeName) {
+  if (!getToken()) {
     throw new Error(
-      'Bright Data is not configured. Set BRIGHT_DATA_API_TOKEN and BRIGHT_DATA_COLLECTOR_ID in backend/.env, or leave DEMO_MODE=true.'
+      'Bright Data is not configured. Set BRIGHT_DATA_API_TOKEN in backend/.env, or leave DEMO_MODE=true.'
+    );
+  }
+  if (!collectorId) {
+    throw new Error(
+      `No collector_id set for store "${storeName || 'unknown'}" in scraper/products.json. Build a collector for this store (see scraper/SETUP.md) and paste its collector_id in.`
     );
   }
 }
@@ -124,19 +133,21 @@ export function repairRows(rows) {
 }
 
 /**
- * Trigger a collector run for one or more product URLs and block until the
- * snapshot has data (or we give up after MAX_POLL_ATTEMPTS).
+ * Trigger a collector run for one or more product URLs, against a specific
+ * store's collector, and block until the snapshot has data (or we give up
+ * after MAX_POLL_ATTEMPTS).
+ * @param {string} collectorId - which store's collector to run
  * @param {string[]} urls
+ * @param {string} [storeName] - only used for a clearer error message
  * @returns {Promise<object[]>} the raw collector output rows
  */
-export async function runCollector(urls) {
-  assertConfigured();
+export async function runCollector(collectorId, urls, storeName) {
+  assertConfigured(collectorId, storeName);
   const API_BASE = getApiBase();
   const TOKEN = getToken();
-  const COLLECTOR_ID = getCollectorId();
 
   const triggerRes = await requestWithRetry(
-    `${API_BASE}/dca/trigger?collector=${encodeURIComponent(COLLECTOR_ID)}`,
+    `${API_BASE}/dca/trigger?collector=${encodeURIComponent(collectorId)}`,
     {
       method: 'POST',
       headers: {
@@ -160,7 +171,7 @@ export async function runCollector(urls) {
       const fixedCount = repaired.filter((r) => r._repairedFrom !== undefined).length;
       if (fixedCount > 0) {
         console.warn(
-          `[brightdata] repaired ${fixedCount} duplicated-price value(s) from this run — see repairDuplicatedPrice() in lib/brightdata.js and docs/KNOWN_ISSUES.md`
+          `[brightdata] repaired ${fixedCount} duplicated-price value(s) from ${storeName || collectorId} — see repairDuplicatedPrice() in lib/brightdata.js and docs/KNOWN_ISSUES.md`
         );
       }
       return repaired;
@@ -172,21 +183,21 @@ export async function runCollector(urls) {
 }
 
 /**
- * Ask Scraper Studio's AI to repair the collector's extraction for a specific
- * problem, using one URL as the verification target. Stops at the approval
- * gate unless autoApprove is true.
+ * Ask Scraper Studio's AI to repair a specific store's collector, using one
+ * URL as the verification target. Stops at the approval gate unless
+ * autoApprove is true.
+ * @param {string} collectorId
  * @param {string} prompt - what's wrong and what the correct output should be
  * @param {string} verifyUrl - a URL known to reproduce the problem
  * @param {boolean} autoApprove
  */
-export async function healCollector(prompt, verifyUrl, autoApprove = false) {
-  assertConfigured();
+export async function healCollector(collectorId, prompt, verifyUrl, autoApprove = false) {
+  assertConfigured(collectorId);
   const API_BASE = getApiBase();
   const TOKEN = getToken();
-  const COLLECTOR_ID = getCollectorId();
 
   const healRes = await requestWithRetry(
-    `${API_BASE}/dca/collectors/${encodeURIComponent(COLLECTOR_ID)}/refactor_template`,
+    `${API_BASE}/dca/collectors/${encodeURIComponent(collectorId)}/refactor_template`,
     {
       method: 'POST',
       headers: {
@@ -199,23 +210,23 @@ export async function healCollector(prompt, verifyUrl, autoApprove = false) {
   const healResult = await healRes.json();
 
   if (healResult.status === 'awaiting_approval' && autoApprove) {
-    return approveHeal();
+    return approveHeal(collectorId);
   }
   return healResult;
 }
 
 /**
  * Commit (or reject) a self-healing fix left awaiting approval by healCollector().
+ * @param {string} collectorId
  * @param {boolean} reject
  */
-export async function approveHeal(reject = false) {
-  assertConfigured();
+export async function approveHeal(collectorId, reject = false) {
+  assertConfigured(collectorId);
   const API_BASE = getApiBase();
   const TOKEN = getToken();
-  const COLLECTOR_ID = getCollectorId();
 
   const approveRes = await requestWithRetry(
-    `${API_BASE}/dca/collectors/${encodeURIComponent(COLLECTOR_ID)}/resume_automation_job`,
+    `${API_BASE}/dca/collectors/${encodeURIComponent(collectorId)}/resume_automation_job`,
     {
       method: 'POST',
       headers: {
@@ -229,5 +240,5 @@ export async function approveHeal(reject = false) {
 }
 
 export function isConfigured() {
-  return Boolean(getToken() && getCollectorId());
+  return Boolean(getToken());
 }

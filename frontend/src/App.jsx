@@ -62,9 +62,9 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="brand">
-          <div className="brand-mark">PG</div>
+          <div className="brand-mark">WG</div>
           <div>
-            <h1>PriceGuard</h1>
+            <h1>WebGuard</h1>
             <p>Self-healing price &amp; inventory tracker · Bright Data Scraper Studio</p>
           </div>
         </div>

@@ -49,15 +49,37 @@ export async function getHealEvents() {
 /**
  * Apply a fresh batch of scraped rows: update each product's current
  * price/stock and append a history point. Rows are matched to products by
- * URL.
+ * URL. A row for a URL that doesn't match any tracked product yet (a new
+ * store's product, seen for the first time) gets a new product entry
+ * created automatically instead of being silently dropped.
+ * @param {object[]} rows
+ * @param {string} [storeName] - label to tag newly-created products with
  */
-export async function applyRun(rows) {
+export async function applyRun(rows, storeName) {
   const state = await load();
   const now = new Date().toISOString();
 
   for (const row of rows) {
-    const product = state.products.find((p) => p.url === row.url);
-    if (!product) continue;
+    let product = state.products.find((p) => p.url === row.url);
+
+    if (!product) {
+      if (row.price === null || row.price === undefined || row.price === '') continue; // don't create a product from a broken row
+      product = {
+        id: `p_${Math.random().toString(36).slice(2, 9)}`,
+        name: row.name || 'Unknown product',
+        url: row.url,
+        category: storeName || 'Uncategorized',
+        store: storeName || 'Unknown store',
+        imageUrl: row.image_url || '',
+        currency: row.currency || '',
+        price: row.price,
+        inStock: Boolean(row.in_stock),
+        lastCheckedAt: now,
+        simulatedBreak: false,
+        history: []
+      };
+      state.products.push(product);
+    }
 
     if (row.price !== null && row.price !== undefined && row.price !== '') {
       product.price = row.price;
@@ -67,6 +89,7 @@ export async function applyRun(rows) {
     }
     product.inStock = row.in_stock === undefined ? product.inStock : Boolean(row.in_stock);
     product.lastCheckedAt = now;
+    if (storeName && !product.store) product.store = storeName;
   }
 
   state.lastRunAt = now;

@@ -1,5 +1,5 @@
 {
-  "name": "priceguard-backend",
+  "name": "webguard-backend",
   "version": "1.0.0",
   "description": "Self-healing price & inventory tracker API — wraps Bright Data Scraper Studio's Collection API and AI self-healing flow.",
   "type": "module",

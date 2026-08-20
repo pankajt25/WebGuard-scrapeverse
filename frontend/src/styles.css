@@ -237,8 +237,6 @@ button.ghost:disabled {
 .pulse-strip {
   background: linear-gradient(145deg, var(--panel) 0%, var(--panel-raised) 100%);
   border: 1px solid var(--line);
-  border-top: 2px solid;
-  border-image: linear-gradient(90deg, var(--brand-red), var(--brand-blue)) 1;
   border-radius: var(--radius);
   padding: 18px 22px;
   display: flex;
@@ -246,6 +244,21 @@ button.ghost:disabled {
   gap: 18px;
   margin-bottom: 26px;
   box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  flex-wrap: wrap;
+  row-gap: 14px;
+}
+
+.pulse-strip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--brand-red), var(--brand-blue));
+  opacity: 0.85;
 }
 
 .pulse-dot {
@@ -301,6 +314,7 @@ button.ghost:disabled {
   gap: 26px;
   margin-left: auto;
   flex-wrap: wrap;
+  row-gap: 10px;
 }
 
 .pulse-meta div {
@@ -410,6 +424,11 @@ button.ghost:disabled {
   min-height: 48px;
 }
 
+.card-top-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .card-thumb {
   width: 48px;
   height: 48px;
@@ -435,6 +454,26 @@ button.ghost:disabled {
 .card-category {
   font-size: 11px;
   color: var(--muted);
+}
+
+.card-store-tag {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.card-broken-flag {
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--red);
+  background: rgba(248, 113, 113, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  padding: 3px 8px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  height: fit-content;
 }
 
 .card-fill {
@@ -505,22 +544,6 @@ button.ghost:disabled {
 
 .card-stock.out::before {
   background: var(--amber);
-}
-
-.card-broken-flag {
-  position: absolute;
-  top: 14px;
-  right: 12px;
-  font-size: 9.5px;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  color: var(--red);
-  background: rgba(248, 113, 113, 0.14);
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  padding: 3px 8px;
-  border-radius: 100px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .sparkline {

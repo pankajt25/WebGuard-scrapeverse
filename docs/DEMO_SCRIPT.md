@@ -1,29 +1,36 @@
-# Demo script (~90 seconds)
+# 🎬 Demo script (~2 minutes, live-mode version)
 
-**0:00–0:10 — Open on the dashboard.**
-"This is PriceGuard — it tracks price and stock across six products through a Bright Data Scraper Studio collector, and it catches the collector breaking on its own."
-Point at the pulse strip: healthy, mint dot, "collector healthy."
+This version shows the dashboard running in **live mode** against a real Bright Data collector — stronger for judging than the simulated version, since it shows genuine platform behavior including a real bug found along the way.
 
-**0:10–0:25 — Tour the grid.**
-Click through two or three product cards. Point out the sparkline, the price, the % trend badge, in-stock/out-of-stock. Click one card fully open to show the detail chart on the right — full price history, not just today's number.
+**0:00–0:15 — Open on the dashboard.**
+"This is WebGuard — a price and inventory tracker built on Bright Data Scraper Studio, running right now in live mode against a real collector I built." Point at the mode pill (LIVE MODE) and the pulse strip ("collector connected").
 
-**0:25–0:35 — Break it on purpose.**
-Click **Simulate site change** on a product card. "This is standing in for what happens when the store redesigns its product page — the price field starts coming back empty."
+**0:15–0:30 — Tour the grid.**
+Click through two or three product cards — real Headphone Zone headphones. Point out the sparkline, price, trend %, in-stock/out-of-stock. Open one fully to show the price-history chart.
 
-**0:35–0:55 — Run and watch it detect + heal.**
-Click **Run scraper now**. Narrate as it happens: the pulse strip flips to amber ("self-healing in progress"), then back to mint. Open the heal timeline panel and point at the new entry — the actual prompt PriceGuard sent to Scraper Studio's AI ("The 'price' field is returning null... re-identify it from the current page..."), and the diff summary describing what got fixed.
+**0:30–0:55 — Trigger a real run and narrate what's actually happening.**
+Click **Run scraper now**. While it's loading (this takes real time — it's genuinely calling Bright Data, not instant like a demo): "This is triggering my actual Scraper Studio collector against six live product pages and polling for results." When it finishes, point at the updated "Last run" timestamp.
 
-**0:55–1:10 — Show it's not a black box.**
-"That prompt and diff are real outputs from Scraper Studio's self-healing flow — `refactor_template` and `resume_automation_job`, the same calls the Bright Data CLI's `scraper heal`/`scraper approve` make." Briefly show `backend/lib/healthMonitor.js` or `brightdata.js` on screen if doing a technical walkthrough.
+**0:55–1:25 — The real bug, told honestly.**
+Switch to the terminal running the backend. Point at the log line: `[brightdata] repaired N duplicated-price value(s)`. "While building this, I found a real bug — this collector's extraction occasionally returns a price as the same digits repeated back-to-back, like 1899 coming back as 189918991899. I tried fixing it with Scraper Studio's AI self-healing three separate times, with increasingly specific prompts — each attempt correctly diagnosed the problem and showed a fixed preview, but the fix never actually persisted to real runs. I documented the whole thing in `docs/KNOWN_ISSUES.md` and built a defensible workaround instead of hiding it: a function that detects the exact repeated-digit pattern and recovers the real value, logging every correction instead of applying it silently." Show `repairDuplicatedPrice()` in `backend/lib/brightdata.js` briefly.
 
-**1:10–1:25 — Live mode note.**
-"In live mode this talks to a real collector built in Scraper Studio — same code path, same detection logic, just a real API call instead of a simulated one." (Optional: show `scraper/SETUP.md` briefly.)
+**1:25–1:45 — Show the detection logic isn't a black box either.**
+Briefly show `assessHealth()` in `healthMonitor.js`. "Every run gets checked for null required fields and row-count collapse — not just whether Scraper Studio says it succeeded, since I learned the hard way that a reported 'done' status doesn't always mean the fix actually shipped."
 
-**1:25–1:30 — Close.**
-Cut back to the healthy dashboard. "PriceGuard — built for Into the Scrape-Verse."
+**1:45–2:00 — Close.**
+Back to the dashboard. "WebGuard — built for Into the Scrape-Verse, using Bright Data Scraper Studio."
+
+## Alternate: demo-mode version (if live mode isn't available when recording)
+
+Use this if credits run out or the collector is unavailable at recording time — the self-heal loop is simulated but runs through the exact same code paths as live mode:
+
+1. Click **Simulate site change** on a product card
+2. Click **Run scraper now** — watch the pulse strip flip amber → mint, and a new entry land in the self-heal timeline
+3. Explain: "This simulated run calls the identical `assessHealth()` and store logic that live mode uses — only the data source differs."
 
 ## Recording notes
 
-- Run in demo mode (`DEMO_MODE=true`, the default) — no API key needed, nothing to redact.
-- Pick a product with a visible price trend (up or down) for the "tour the grid" beat so the sparkline color reads clearly on camera.
-- The amber "repairing" pulse only shows for a moment — if recording, consider a quick screen-record + trim rather than a live take, so the timing lands cleanly.
+- Live-mode version is stronger for judging (rule 3/5 explicitly require a real custom Scraper Studio collector) — use it if your Bright Data credits/collector are working when you record.
+- The real run in live mode takes noticeably longer than demo mode (polling Bright Data) — don't cut that pause, it's proof it's real.
+- Keep the terminal visible during the bug-explanation beat — the log line and code are your evidence this isn't just narrated, it's actually happening.
+- Don't rush the `KNOWN_ISSUES.md` explanation — this is genuinely your strongest "technical excellence" and "understand your own project" material (rules 11/12).

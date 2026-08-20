@@ -1,4 +1,4 @@
-# PriceGuard — submission write-up
+# 🎯 WebGuard — submission write-up
 
 ## One-line pitch
 
@@ -8,7 +8,7 @@ A price and inventory tracker that catches its own scraper breaking and fixes it
 
 Anyone tracking prices across stores eventually hits the same failure: the scraper runs fine for weeks, then a site redesign renames a class or moves a field, and the scraper starts returning nulls or garbage. Nothing crashes — it just quietly stops being useful. By the time someone checks the dashboard and notices the numbers look wrong, the tracker may have been broken for days.
 
-## What PriceGuard does about it
+## What WebGuard does about it
 
 1. A Scraper Studio collector, built with a plain-language field spec (`scraper/products.json`), pulls name/price/currency/in-stock/image for a list of tracked products.
 2. Every run, the backend's health monitor (`backend/lib/healthMonitor.js`) checks the result against two signals: are required fields (`name`, `price`) null or empty, and did the row count collapse relative to what was requested. Either one flags the run as unhealthy.
@@ -20,7 +20,7 @@ Anyone tracking prices across stores eventually hits the same failure: the scrap
 
 **Potential impact.** Anyone running scrapers for price monitoring, lead generation, or competitive intel hits the "silent breakage" problem eventually. This turns it from a support ticket into an automated repair.
 
-**Creativity and innovation.** Most self-healing demos stop at "the scraper fixed itself" in a terminal. PriceGuard treats healing as a product signal: the dashboard's health strip, the broken-field flag on the affected product card, and the heal timeline all make an invisible backend event visible and understandable to a non-technical user.
+**Creativity and innovation.** Most self-healing demos stop at "the scraper fixed itself" in a terminal. WebGuard treats healing as a product signal: the dashboard's health strip, the broken-field flag on the affected product card, and the heal timeline all make an invisible backend event visible and understandable to a non-technical user.
 
 **Technical excellence.** Detection is explicit and testable (`assessHealth()` in `healthMonitor.js` — required-field nulls + row-count collapse, not a vibe check). The Bright Data client (`backend/lib/brightdata.js`) retries transient 5xx/network failures with backoff and fails fast on 4xx, matching Bright Data's own reference implementation. Demo mode and live mode share the exact same code path through `assessHealth` → `autoHeal`, so what you see in the demo is genuinely the same logic that runs against a real collector.
 

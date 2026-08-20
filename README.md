@@ -1,42 +1,143 @@
-# PriceGuard
+<div align="center">
 
-**A self-healing price & inventory tracker built on Bright Data Scraper Studio.**
+# 🕸️ WebGuard
 
-Built for [Into the Scrape-Verse](https://www.wemakedevs.org/hackathons/scrape-verse) (WeMakeDevs × Bright Data, Aug 17–23 2026).
+### A self-healing price & inventory tracker built on Bright Data Scraper Studio
 
-PriceGuard watches a list of e-commerce product pages, pulls price and stock data through a Scraper Studio collector, and keeps a running history so you can see price drops, stock-outs, and trend lines over time. When the target site redesigns its layout and the collector starts returning empty or null fields, PriceGuard's health monitor detects it automatically and triggers Bright Data's AI self-healing flow (`scraper heal` → approve) to repair the extraction — no manual selector fixing.
+[![Hackathon](https://img.shields.io/badge/hackathon-Into%20the%20Scrape--Verse-e23636?style=flat-square)](https://www.wemakedevs.org/hackathons/scrape-verse)
+[![Bright Data](https://img.shields.io/badge/powered%20by-Bright%20Data%20Scraper%20Studio-3b82f6?style=flat-square)](https://brightdata.com)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-34d399?style=flat-square)](https://nodejs.org)
+[![Status](https://img.shields.io/badge/status-live-34d399?style=flat-square)]()
+
+Built for [Into the Scrape-Verse](https://www.wemakedevs.org/hackathons/scrape-verse) — WeMakeDevs × Bright Data, Aug 17–23 2026
+
+</div>
+
+---
+
+## What it does
+
+WebGuard watches a list of e-commerce product pages, pulls price and stock data through a Scraper Studio collector, and keeps a running history so you can see price drops, stock-outs, and trend lines over time.
+
+When the target site redesigns its layout and the collector starts returning empty or null fields, WebGuard's health monitor **detects it automatically** and triggers Bright Data's AI self-healing flow (`scraper heal` → `approve`) to repair the extraction — no manual selector fixing.
 
 ```
-Scraper Studio collector  →  backend health monitor  →  JSON store  →  React dashboard
-        ▲                           │
-        └──────── self-heal ────────┘   (triggered automatically on broken extraction)
+ Scraper Studio collector  ──▶  backend health monitor  ──▶  JSON store  ──▶  React dashboard
+         ▲                              │
+         └───────────── self-heal ◀─────┘   (triggered automatically on broken extraction)
 ```
 
-## AI assistance disclosure
+<br>
 
-Per the hackathon rules (AI coding assistants are allowed if disclosed), here's what was used and how:
-
-- **Claude (Anthropic)** was used as an AI coding assistant for the majority of this project's code: the backend (Express server, Bright Data API client, health-detection logic, JSON store), the frontend (React dashboard, components, styling), and this documentation.
-- **What I (the participant) actually did:** ran every `brightdata` CLI command myself against my own Bright Data account and credits; created the collector, tested it, and drove the `heal`/`approve` cycle through multiple real attempts; discovered that the collector was returning a real data-quality bug (prices coming back as duplicated digit strings, e.g. `1899` returned as `189918991899`) that three separate AI-assisted heal attempts in Scraper Studio did not actually resolve in production runs; debugged a real load-order bug in the backend (Bright Data credentials were being read into memory before the `.env` file was parsed, so live mode silently behaved like it had no credentials) by working through the actual server logs and testing hypotheses until we isolated the cause; verified the final fix against live scraper output myself before considering it working.
-- **Full details on the price-duplication bug, what was tried, and why the shipped fix works the way it does** are documented in `docs/KNOWN_ISSUES.md` — written to be an honest account of a real debugging process, not a claim that everything worked perfectly on the first try.
-- I can explain the scraper's field extraction, the health-check logic in `backend/lib/healthMonitor.js`, why `repairDuplicatedPrice()` exists and what it does and doesn't fix, and the overall architecture (`docs/ARCHITECTURE.md`) — this wasn't generated and submitted without understanding it.
-
-
+## 📁 What's in this repo
 
 | Folder | What it is |
 |---|---|
-| `scraper/` | Everything needed to build the Scraper Studio collector itself: the field spec, seed product list, and the exact CLI commands to create/run/heal it |
-| `backend/` | Node.js/Express API that triggers the collector, polls for results, runs the health check, stores history, and drives self-healing |
+| `scraper/` | Multi-store collector config: field spec, one entry per store with its own `collector_id`, and the exact CLI commands to create/run/heal each one |
+| `backend/` | Node.js/Express API that triggers each store's collector, polls for results, runs the health check, stores history, drives self-healing, and serves a consolidated single-file dashboard directly |
 | `frontend/` | React + Vite dashboard: product grid, price-history charts, collector health badge, self-heal event timeline |
-| `docs/` | Submission write-up, architecture notes, judging-criteria mapping, and a demo script |
+| `docs/` | Submission write-up, architecture notes, judging-criteria mapping, a demo script, and an honest log of a real bug found along the way |
 
-## Two ways to run it
+<br>
 
-**Demo mode (default, no Bright Data account needed)** — the backend ships with 14 days of realistic seed data for 6 products and a button that simulates a site redesign so you can see detection → heal → recovery end-to-end without spending any credits. This is what you want for a first look or a screen recording.
+## 🏗️ Complete architecture
 
-**Live mode** — point it at a real Scraper Studio collector using your own Bright Data API key and it trigger real collector runs and real `scraper heal` calls. See `scraper/SETUP.md` for the exact CLI commands to build the collector, and `backend/.env.example` for the keys to fill in.
+### Data flow
 
-## Quick start (demo mode)
+```
+                    ┌────────────────────────────┐      ┌────────────────────────────┐
+                    │  Store A's Scraper Studio  │      │  Store B's Scraper Studio  │
+                    │  collector (own c_id)      │      │  collector (own c_id)      │  ...one per store, since a
+                    │  POST /dca/trigger          │      │  POST /dca/trigger          │  collector's extraction logic
+                    │  GET  /dca/dataset           │      │  GET  /dca/dataset           │  is built for ONE site's markup
+                    └──────────────┬─────────────┘      └──────────────┬─────────────┘
+                                   │ rows: [{url, name, price, currency, in_stock, image_url}]
+                                   ▼
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ backend/server.js   POST /api/run   →  runLiveAllStores()                              │
+│                                                                                          │
+│   for each store with a collector_id set:                                              │
+│     rows ──▶ brightdata.runCollector(collectorId, urls, storeName)                      │
+│                   │  (applies repairDuplicatedPrice() to every row automatically —       │
+│                   │   see "a real bug" below)                                            │
+│                   ▼                                                                     │
+│           healthMonitor.assessHealth(rows, expectedCount)                                │
+│                   │                                                                     │
+│         healthy   │   unhealthy (null required field or row-count collapse)              │
+│           │        │                                                                     │
+│           ▼        ▼                                                                     │
+│   store.applyRun   healthMonitor.autoHeal(assessment, collectorId)                       │
+│   (price history,         │            (heals THIS store's collector only —              │
+│    auto-creates            │             other stores keep running independently)         │
+│    new products)           ▼                                                             │
+│                    brightdata.healCollector(collectorId, prompt, verifyUrl)               │
+│                    POST /dca/collectors/{id}/refactor_template                            │
+│                             │                                                             │
+│              awaiting_approval        (AUTO_APPROVE_HEALS=true)                           │
+│                       │                          │                                        │
+│                       ▼                          ▼                                        │
+│              logged for review        brightdata.approveHeal(collectorId)                 │
+│                                        POST .../resume_automation_job                     │
+│                                                   │                                        │
+│                                                   ▼                                        │
+│                                     re-run that store's collector, apply fixed rows        │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+                    backend/data/state.json (products, per-store history, heal events — deduped by repeatCount)
+                                   │
+                    ┌──────────────┴──────────────┐
+                    ▼                              ▼
+        GET /api/products, /heal-events    served directly by Express:
+                    │                       backend/public/index.html
+                    ▼                       (zero-build single-file dashboard,
+        React dashboard (frontend/)          same origin as the API, `npm start` alone is enough)
+```
+
+### Why multi-store needs one collector per site
+
+A Scraper Studio collector's extraction code is generated for one site's specific DOM structure. Real evidence from this project: running the Headphone Zone collector against `books.toscrape.com` and `amkette.com` in the same batch produced `"Parse error: Cannot read properties of undefined (reading 'split')"` for both — the generated code crashes trying to read a value from a page structure it was never built for. `scraper/products.json`'s `stores` array reflects this: each store is its own object with its own `collector_id`, and `runLiveAllStores()` in `server.js` loops through them independently — one store's collector breaking (and healing) never affects another's.
+
+### Why detection is a separate module
+
+`healthMonitor.js` takes rows in and returns an assessment out — it doesn't know about HTTP, Express, the store, or even Bright Data. That makes it reusable identically for every store's collector, and for demo mode's simulated rows, so the demo is an honest representation of the real logic rather than a separate mocked-up path.
+
+### Why a flat-file store
+
+For a week-long hackathon build, `backend/data/state.json` (seeded from `data/seed.json` on first run) is the right amount of infrastructure — no database to provision, and the whole state is easy to inspect or reset by hand (`rm backend/data/state.json`). `store.js` is the only file that touches persistence.
+
+### Two UIs, on purpose
+
+`frontend/` (React + Vite) is the primary dashboard used for active development. `backend/public/index.html` is a zero-dependency, zero-build alternative served directly by Express on the same port as the API — useful when you want the whole project running from a single `npm start` in `backend/` with nothing else to install or configure. Both talk to the exact same `/api/*` endpoints.
+
+Full write-up with extension ideas (adding required fields, alerting, scheduling) in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+<br>
+
+## 🚀 Two ways to run it
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🎭 Demo mode
+*(default, no Bright Data account needed)*
+
+Ships with 14 days of realistic seed data for 6 products and a button that simulates a site redesign so you can see detection → heal → recovery end-to-end without spending any credits. Best for a first look.
+
+</td>
+<td width="50%" valign="top">
+
+### ⚡ Live mode
+*(real Bright Data collector)*
+
+Point it at a real Scraper Studio collector using your own API key — triggers real collector runs and real `scraper heal` calls. See `scraper/SETUP.md` for the CLI commands, `backend/.env.example` for the keys.
+
+</td>
+</tr>
+</table>
+
+### Quick start — demo mode
 
 ```bash
 # Terminal 1 — backend
@@ -52,22 +153,57 @@ npm run dev
 # → dashboard on http://localhost:5173
 ```
 
-Open the dashboard, hit **Simulate Site Change** on any product card, and watch the health badge flip from healthy → broken → self-healing → healthy again, with the event logged in the timeline.
+Open the dashboard, hit **Simulate Site Change** on any product card, then **Run Scraper Now** — watch the health badge flip healthy → broken → self-healing → healthy again, with the event logged in the timeline.
 
-## Quick start (live mode)
+### Quick start — live mode
 
-1. Follow `scraper/SETUP.md` to build a collector in Scraper Studio with the Bright Data CLI (`brightdata scraper create ...`) using the field spec in `scraper/products.json`.
-2. Copy `backend/.env.example` to `backend/.env` and fill in `BRIGHT_DATA_API_TOKEN`, `BRIGHT_DATA_COLLECTOR_ID`, and set `DEMO_MODE=false`.
-3. `npm start` in `backend/`, `npm run dev` in `frontend/`, same as above.
-4. Hit **Run Scraper Now** to trigger a real collector run.
+1. Follow `scraper/SETUP.md` to build a collector **per store** in Scraper Studio with the Bright Data CLI (`brightdata scraper create ...`).
+2. Paste each store's `collector_id` directly into its entry in `scraper/products.json` (not `.env` — collector IDs are per-store, not global).
+3. Copy `backend/.env.example` to `backend/.env`, fill in `BRIGHT_DATA_API_TOKEN` (account-wide), and set `DEMO_MODE=false`.
+4. `npm start` in `backend/` — either open `http://localhost:4000` directly (consolidated single-file dashboard) or also run `npm run dev` in `frontend/` for the React version on `http://localhost:5173`.
+5. Hit **Run Scraper Now** — it runs every store with a `collector_id` set, independently.
 
-## Judging-criteria alignment
+<br>
 
-See `docs/SUBMISSION.md` for the full write-up. Short version: Scraper Studio is the only thing that talks to the target site (`Use of Scraper Studio`); the health monitor treats null/missing fields and row-count drops as first-class signals and calls `scraper heal` automatically (`Reliability and self-healing`); the dashboard is the actual product a buyer would use (`Best UI` / `Potential impact`); the backend is organized into small, single-purpose modules with no dead code (`Best Clean Code`).
+## 🏆 Judging-criteria alignment
 
-## Tech stack
+Full write-up in `docs/SUBMISSION.md` — short version:
 
-- **Scraping:** Bright Data Scraper Studio (collector) + Bright Data CLI for build/heal
-- **Backend:** Node.js, Express, native `fetch`, a flat-file JSON store (swap for Postgres/Mongo trivially — see `backend/lib/store.js`)
-- **Frontend:** React 18, Vite, Recharts
-- **No external services required to demo** — everything runs locally
+- **Use of Scraper Studio** — Scraper Studio is the only thing that talks to the target site
+- **Reliability & self-healing** — the health monitor treats null/missing fields and row-count drops as first-class signals and calls `scraper heal` automatically
+- **Potential impact / Best UI** — the dashboard is the actual product a buyer would use
+- **Technical excellence** — a real platform bug was found, documented, and worked around defensibly (see below) rather than hidden
+
+<br>
+
+## 🐛 A real bug, found and documented honestly
+
+While building this, the collector was found to return prices as duplicated digit strings (`1899` → `189918991899`). Three separate `scraper heal` attempts in Scraper Studio each correctly diagnosed the problem and previewed a fix — but the fix never persisted to production runs. Rather than hide it, the whole debugging process is written up in **[`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md)**, and a defensible, logged workaround (`repairDuplicatedPrice()`) ships in `backend/lib/brightdata.js`.
+
+<br>
+
+## 🤖 AI assistance disclosure
+
+Per the hackathon rules (AI coding assistants are allowed if disclosed):
+
+- **Claude (Anthropic)** was used as an AI coding assistant for most of this project's code — the backend, frontend, and documentation.
+- **What I (the participant) actually did:** ran every `brightdata` CLI command myself against my own Bright Data account and credits; created the collector, tested it, and drove the `heal`/`approve` cycle through multiple real attempts; discovered the price-duplication bug and confirmed three AI-assisted heal attempts didn't actually fix it in production; debugged a real load-order bug in the backend (credentials were read into memory before `.env` was parsed) by working through server logs and testing hypotheses until the cause was isolated; verified the final fix against live scraper output myself.
+- I can explain the scraper's field extraction, the health-check logic in `backend/lib/healthMonitor.js`, why `repairDuplicatedPrice()` exists and what it does and doesn't fix, and the overall architecture in `docs/ARCHITECTURE.md`.
+
+<br>
+
+## 🛠️ Tech stack
+
+| | |
+|---|---|
+| **Scraping** | Bright Data Scraper Studio (collector) + Bright Data CLI for build/heal |
+| **Backend** | Node.js, Express, native `fetch`, a flat-file JSON store (swap for Postgres/Mongo — see `backend/lib/store.js`) |
+| **Frontend** | React 18, Vite, Recharts |
+| **Runs** | Entirely locally — no external services required to demo |
+
+<div align="center">
+<br>
+
+*Built with 🕸️ for Into the Scrape-Verse*
+
+</div>
