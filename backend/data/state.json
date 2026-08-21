@@ -1,9 +1,9 @@
 {
-  "lastRunAt": "2026-08-21T12:52:11.017Z",
+  "lastRunAt": "2026-08-21T18:39:27.264Z",
   "collectorHealth": {
     "healthy": true,
     "brokenFields": [],
-    "lastCheckedAt": "2026-08-21T12:52:11.018Z"
+    "lastCheckedAt": "2026-08-21T18:39:27.265Z"
   },
   "healEvents": [
     {
@@ -535,9 +535,9 @@
       "store": "Headphone Zone",
       "imageUrl": "https://www.headphonezone.in/cdn/shop/files/Headphone-Zone-FiiO-FG3-Gallary-17.jpg",
       "currency": "INR",
-      "price": 19999,
+      "price": 2599,
       "inStock": true,
-      "lastCheckedAt": "2026-08-21T12:52:11.017Z",
+      "lastCheckedAt": "2026-08-21T18:39:27.264Z",
       "simulatedBreak": false,
       "history": [
         {
@@ -748,6 +748,36 @@
         {
           "t": "2026-08-21T12:52:11.017Z",
           "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 1899,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 6999,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 24990,
+          "inStock": true
+        },
+        {
+          "t": "2026-08-21T18:39:27.264Z",
+          "price": 2599,
           "inStock": true
         }
       ]
