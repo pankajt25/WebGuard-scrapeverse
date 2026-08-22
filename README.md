@@ -48,39 +48,39 @@ When the target site redesigns its layout and the collector starts returning emp
                     ┌────────────────────────────┐      ┌────────────────────────────┐
                     │  Store A's Scraper Studio  │      │  Store B's Scraper Studio  │
                     │  collector (own c_id)      │      │  collector (own c_id)      │  ...one per store, since a
-                    │  POST /dca/trigger          │      │  POST /dca/trigger          │  collector's extraction logic
-                    │  GET  /dca/dataset           │      │  GET  /dca/dataset           │  is built for ONE site's markup
+                    │  POST /dca/trigger         │      │  POST /dca/trigger         │  collector's extraction logic
+                    │  GET  /dca/dataset         │      │  GET  /dca/dataset         │  is built for ONE site's markup
                     └──────────────┬─────────────┘      └──────────────┬─────────────┘
                                    │ rows: [{url, name, price, currency, in_stock, image_url}]
                                    ▼
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ backend/server.js   POST /api/run   →  runLiveAllStores()                              │
-│                                                                                          │
-│   for each store with a collector_id set:                                              │
-│     rows ──▶ brightdata.runCollector(collectorId, urls, storeName)                      │
-│                   │  (applies repairDuplicatedPrice() to every row automatically —       │
-│                   │   see "a real bug" below)                                            │
-│                   ▼                                                                     │
-│           healthMonitor.assessHealth(rows, expectedCount)                                │
-│                   │                                                                     │
-│         healthy   │   unhealthy (null required field or row-count collapse)              │
-│           │        │                                                                     │
-│           ▼        ▼                                                                     │
-│   store.applyRun   healthMonitor.autoHeal(assessment, collectorId)                       │
-│   (price history,         │            (heals THIS store's collector only —              │
-│    auto-creates            │             other stores keep running independently)         │
-│    new products)           ▼                                                             │
-│                    brightdata.healCollector(collectorId, prompt, verifyUrl)               │
-│                    POST /dca/collectors/{id}/refactor_template                            │
-│                             │                                                             │
-│              awaiting_approval        (AUTO_APPROVE_HEALS=true)                           │
-│                       │                          │                                        │
-│                       ▼                          ▼                                        │
-│              logged for review        brightdata.approveHeal(collectorId)                 │
-│                                        POST .../resume_automation_job                     │
-│                                                   │                                        │
-│                                                   ▼                                        │
-│                                     re-run that store's collector, apply fixed rows        │
+│ backend/server.js   POST /api/run   →  runLiveAllStores()                            │
+│                                                                                      │
+│   for each store with a collector_id set:                                            │
+│     rows ──▶ brightdata.runCollector(collectorId, urls, storeName)                   │
+│                   │  (applies repairDuplicatedPrice() to every row automatically —   │
+│                   │   see "a real bug" below)                                        │
+│                   ▼                                                                  │
+│           healthMonitor.assessHealth(rows, expectedCount)                            │
+│                   │                                                                  │
+│         healthy   │   unhealthy (null required field or row-count collapse)          │
+│           │        │                                                                 │
+│           ▼        ▼                                                                 │
+│   store.applyRun   healthMonitor.autoHeal(assessment, collectorId)                   │
+│   (price history,         │            (heals THIS store's collector only —          │
+│    auto-creates            │             other stores keep running independently)    │
+│    new products)           ▼                                                         │
+│                    brightdata.healCollector(collectorId, prompt, verifyUrl)          │
+│                    POST /dca/collectors/{id}/refactor_template                       │
+│                             │                                                        │
+│              awaiting_approval        (AUTO_APPROVE_HEALS=true)                      │
+│                       │                          │                                   │
+│                       ▼                          ▼                                   │
+│              logged for review        brightdata.approveHeal(collectorId)            │
+│                                        POST .../resume_automation_job                │
+│                                                   │                                  │
+│                                                   ▼                                  │
+│                                     re-run that store's collector, apply fixed rows  │
 └──────────────────────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
