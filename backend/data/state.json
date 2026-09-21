@@ -1,9 +1,9 @@
 {
-  "lastRunAt": "2026-09-21T03:57:09.423Z",
+  "lastRunAt": "2026-09-21T12:17:31.801Z",
   "collectorHealth": {
     "healthy": true,
     "brokenFields": [],
-    "lastCheckedAt": "2026-09-21T03:57:09.424Z"
+    "lastCheckedAt": "2026-09-21T12:17:31.802Z"
   },
   "healEvents": [
     {
@@ -537,40 +537,10 @@
       "currency": "INR",
       "price": 19999,
       "inStock": true,
-      "lastCheckedAt": "2026-09-21T03:57:09.423Z",
+      "lastCheckedAt": "2026-09-21T12:17:31.801Z",
       "simulatedBreak": false,
       "history": [
         {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 1899,
-          "inStock": true
-        },
-        {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 6999,
-          "inStock": true
-        },
-        {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 2599,
-          "inStock": true
-        },
-        {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
-          "t": "2026-09-18T20:35:39.665Z",
-          "price": 26990,
-          "inStock": true
-        },
-        {
           "t": "2026-09-19T03:43:49.486Z",
           "price": 19999,
           "inStock": true
@@ -837,6 +807,36 @@
         },
         {
           "t": "2026-09-21T03:57:09.423Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
+          "price": 1899,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
+          "price": 6999,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
+          "price": 2599,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
+          "price": 26990,
+          "inStock": true
+        },
+        {
+          "t": "2026-09-21T12:17:31.801Z",
           "price": 19999,
           "inStock": true
         }
