@@ -1,9 +1,9 @@
 {
-  "lastRunAt": "2026-10-05T13:56:34.204Z",
+  "lastRunAt": "2026-10-05T23:51:22.167Z",
   "collectorHealth": {
     "healthy": true,
     "brokenFields": [],
-    "lastCheckedAt": "2026-10-05T13:56:34.205Z"
+    "lastCheckedAt": "2026-10-05T23:51:22.222Z"
   },
   "healEvents": [
     {
@@ -535,42 +535,12 @@
       "store": "Headphone Zone",
       "imageUrl": "https://www.headphonezone.in/cdn/shop/files/Headphone-Zone-FiiO-FG3-Gallary-17.jpg",
       "currency": "INR",
-      "price": 6999,
+      "price": 19999,
       "inStock": true,
-      "lastCheckedAt": "2026-10-05T13:56:34.204Z",
+      "lastCheckedAt": "2026-10-05T23:51:22.167Z",
       "simulatedBreak": false,
       "history": [
         {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 6999,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 1899,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 2599,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-03T04:22:13.749Z",
-          "price": 24990,
-          "inStock": true
-        },
-        {
           "t": "2026-10-03T11:16:42.730Z",
           "price": 19999,
           "inStock": true
@@ -838,6 +808,36 @@
         {
           "t": "2026-10-05T13:56:34.204Z",
           "price": 6999,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 2599,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 24990,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 1899,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 6999,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-05T23:51:22.167Z",
+          "price": 19999,
           "inStock": true
         }
       ]
