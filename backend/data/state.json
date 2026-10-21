@@ -1,9 +1,9 @@
 {
-  "lastRunAt": "2026-10-21T16:49:15.166Z",
+  "lastRunAt": "2026-10-21T21:23:45.430Z",
   "collectorHealth": {
     "healthy": true,
     "brokenFields": [],
-    "lastCheckedAt": "2026-10-21T16:49:15.167Z"
+    "lastCheckedAt": "2026-10-21T21:23:45.431Z"
   },
   "healEvents": [
     {
@@ -537,40 +537,10 @@
       "currency": "INR",
       "price": 0,
       "inStock": true,
-      "lastCheckedAt": "2026-10-21T16:49:15.166Z",
+      "lastCheckedAt": "2026-10-21T21:23:45.430Z",
       "simulatedBreak": false,
       "history": [
         {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 0,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 1899,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 0,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 0,
-          "inStock": true
-        },
-        {
-          "t": "2026-10-19T03:46:53.980Z",
-          "price": 19999,
-          "inStock": true
-        },
-        {
           "t": "2026-10-19T12:30:12.441Z",
           "price": 1899,
           "inStock": true
@@ -837,6 +807,36 @@
         },
         {
           "t": "2026-10-21T16:49:15.166Z",
+          "price": 0,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
+          "price": 1899,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
+          "price": 0,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
+          "price": 19999,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
+          "price": 0,
+          "inStock": true
+        },
+        {
+          "t": "2026-10-21T21:23:45.430Z",
           "price": 0,
           "inStock": true
         }
