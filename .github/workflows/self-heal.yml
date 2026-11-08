@@ -58,6 +58,6 @@ jobs:
             echo "No data changes this run — nothing to commit."
           else
             git commit -m "🤖 automated scrape run — $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git pull --rebase origin main
+            git pull --rebase -X theirs origin main
             git push origin main
           fi
