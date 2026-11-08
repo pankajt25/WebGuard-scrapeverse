@@ -19,6 +19,10 @@ on:
 permissions:
   contents: write # needed to commit the updated state.json back to the repo
 
+concurrency:
+  group: scrape-and-heal
+  cancel-in-progress: false
+
 jobs:
   run-and-heal:
     runs-on: ubuntu-latest
@@ -54,5 +58,6 @@ jobs:
             echo "No data changes this run — nothing to commit."
           else
             git commit -m "🤖 automated scrape run — $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push
+            git pull --rebase origin main
+            git push origin main
           fi
